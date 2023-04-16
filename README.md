@@ -51,4 +51,5 @@ When using, please use these checkpoints
 
 `checkpoint-rs.tar` and `checkpoint-kn.tar` are trained using RealSense data and Kinect data respectively.
 
-
+## Main changes
+The file Main_using_urx.py contains the prototype for grasping.
