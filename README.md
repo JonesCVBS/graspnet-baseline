@@ -57,7 +57,7 @@ A class for camera control was created as RealSenseCameraV2.py
 
 ### Graspnet
 A modified Demo.py was created and named GraspPointsFromRealsense.py.
-  This modified demo.py is a class that outputs grasping poses with an associated grasp score using the RealSenseCaemraV2 as input.
+  This modified demo.py is a class that outputs grasping poses with an associated grasp score using the RealSenseCameraV2 as input.
 
 ### Testing
-The file Main_using_urx.py contains the prototype for grasping.
+The file Main_using_urx.py contains the prototype for grasping. It uses the urx package to control the ur robot
