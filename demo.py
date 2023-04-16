@@ -77,6 +77,7 @@ def get_and_process_data(data_dir):
     color_sampled = color_masked[idxs]
 
     # convert data
+    print("cloud_masked type: ", cloud_masked.dtype)
     cloud = o3d.geometry.PointCloud()
     cloud.points = o3d.utility.Vector3dVector(cloud_masked.astype(np.float32))
     cloud.colors = o3d.utility.Vector3dVector(color_masked.astype(np.float32))
@@ -105,9 +106,10 @@ def collision_detection(gg, cloud):
     return gg
 
 def vis_grasps(gg, cloud):
+    print('Showing top 50 grasps')
     gg.nms()
     gg.sort_by_score()
-    gg = gg[:50]
+    gg = gg[:2]
     grippers = gg.to_open3d_geometry_list()
     o3d.visualization.draw_geometries([cloud, *grippers])
 
@@ -119,6 +121,9 @@ def demo(data_dir):
         gg = collision_detection(gg, np.array(cloud.points))
     vis_grasps(gg, cloud)
 
+    return gg
+
 if __name__=='__main__':
     data_dir = 'doc/example_data'
-    demo(data_dir)
+    gg = demo(data_dir)
+    print(gg)
