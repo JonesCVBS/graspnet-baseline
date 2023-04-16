@@ -55,9 +55,9 @@ When using, please use these checkpoints
 ### Camera
 A class for camera control was created as RealSenseCameraV2.py
 
-###Graspnet
+### Graspnet
 A modified Demo.py was created and named GraspPointsFromRealsense.py.
   This modified demo.py is a class that outputs grasping poses with an associated grasp score using the RealSenseCaemraV2 as input.
 
-###Testing
+### Testing
 The file Main_using_urx.py contains the prototype for grasping.
