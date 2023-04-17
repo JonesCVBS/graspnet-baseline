@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.join(os.getcwd(), ''))
+sys.path.append(os.path.join(os.getcwd(), 'graspnet-baseline'))
 from GraspPointsFromRealsense import GraspNetDemo
 from RealSenseCamv2 import RealSenseCamera
 import numpy as np
@@ -12,10 +12,11 @@ import cv2
 """This is the main file for testing the grasping application using a Ur3e robot and a Realsense camera."""
 
 #Init the graspnet class
-graspnet = GraspNetDemo(checkpoint_path='checkpoint-rs.tar')
-T_Cam2EE = np.load('../HandeyeCalibration/T_cam2gripper.npz')['arr_0']
-TEE2Cam = T_Cam2EE
-TEE2Cam = np.linalg.inv(T_Cam2EE)
+graspnet = GraspNetDemo(checkpoint_path='graspnet-baseline/checkpoint-rs.tar')
+T_Cam2EE = np.load('HandeyeCalibration/T_cam2gripper_Method_2.npz')['arr_0']
+#TEE2Cam = T_Cam2EE
+TEE2Cam = np.load('HandeyeCalibration/T_gripper2cam_Method_2.npz')['arr_0']
+
 print("TEE2Cam is: ", TEE2Cam)
 print("T_Cam2EE is: ", T_Cam2EE)
 
@@ -24,16 +25,19 @@ import numpy as np
 
 rob = urx.Robot("192.168.1.10")
 rob.set_tcp((0.03, 0, 0.1739,0, 0, 0, ))
+rob.set_tcp((0.0091, -0.004, 0.1439,0, 0, 0, ))
+rob.set_tcp((0, -0, 0,0, 0, 0, ))
+
 rob.set_payload(1.2, (0, -0.0013, 0.055))
 
 #Move to initial position
-Pose_table = np.array([-0.23243739731516952, 0.05025678478583824, 0.3237108285398736, -2.1951544402391088, -1.8861662631500873, 0.16974858423254283])
+Pose_table = np.array([-0.42292605641053516, -0.043388532280434156, 0.3354523516505133, 2.361213727001138, 2.072139846990468, 4.295346272191453e-05])
 Pose_table_angled = np.array([0.15170553020713323, -0.12156380800122886, 0.35432814878277663, 0.34710206111963327, -3.0699030615481946, 0.3695983305307578])
 Pose_robot_ws = np.array([0.21844737778746745, -0.21545469618691046, 0.2925104933944713, -1.190170844575031, 2.9074123639602196, 1.58705773960657e-05])
 initalPos = Pose_table
 # move the robot
 a = 0.1
-v = 0.05
+v = 0.1
 rob.movel((initalPos), a, v)  # move relative to current pose
 T_gripper2grasp = np.eye(4)
 
@@ -65,6 +69,7 @@ def create_test_grasping_points():
     R_cam2ur = np.array([[-1,  0,  0],
                          [ 0, -1,  0],
                          [ 0,  0,  1]])
+    R_cam2ur = np.eye(3)
     R_correction = np.matmul(R_object2cam,R_cam2ur)
     best_grasp_orientation = np.matmul( best_grasp_orientation,R_correction)
     #The current grasping point is in the camera frame. It must be converted to the robot base frame
@@ -77,8 +82,9 @@ def create_test_grasping_points():
     print("T_EE2grasp is: ", T_EE2grasp)
     #add the offset to the grasping point, no difference in orientation
     T_Gripper2EE = np.eye(4)
-    T_Gripper2EE[2,3] = -0.08
-    T_gripper2grasp = np.matmul(T_Gripper2EE, T_EE2grasp)
+    #T_Gripper2EE[0,3] = 0.05
+    T_Gripper2EE[2,3] = -0.1239
+    T_gripper2grasp = np.matmul(T_Gripper2EE,T_EE2grasp)
     print("T_gripper2grasp is:", T_gripper2grasp)
     return T_gripper2grasp
 
@@ -173,8 +179,8 @@ while Items==1:
 
     #move back to starting position
     rob.movel((initalPos), a, v)  # move relative to current pose
-    Pose_drop = np.array([0.36468467427686435, 0.015347861217733641, 0.1250860898047682, -1.8067321353604489, 2.527139861231424, -0.09850408959046032])
-    Pose_grop_table = np.array([-0.09081074220933416, -0.32326444339291244, 0.14236927286485307, -2.2726437002844895, -2.100567158139399, -0.09742738086098596])
+    Pose_drop = np.array([0.36468467427686435, 0.015347861217733641, 0.2050860898047682, -1.8067321353604489, 2.527139861231424, -0.09850408959046032])
+    Pose_grop_table = np.array([-0.09081074220933416, -0.32326444339291244, 0.25236927286485307, -2.2726437002844895, -2.100567158139399, -0.09742738086098596])
     rob.movel((Pose_grop_table), a, v)  # move relative to current pose
     # wait for input from user
     input("CLOSE GRIPPER. Press Enter to continue...")
